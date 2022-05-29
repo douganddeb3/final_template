@@ -103,6 +103,7 @@ class Question(models.Model):
     question_text = models.CharField(max_length=100)
     #question grade/mark
     grade = models.IntegerField(default=0)
+    
 
     # <HINT> A sample model method to calculate if learner get the score of the question
     def is_get_score(self, selected_ids):
@@ -126,6 +127,7 @@ class Choice(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, default=1)
     content = models.CharField(max_length=100)
+    correct = models.BooleanField(default = True)
 # One submission could have multiple choices
 # One choice could belong to multiple submissions
 # submission = models.ManyToMany(Submission)
