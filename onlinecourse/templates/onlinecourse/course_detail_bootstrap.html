@@ -63,6 +63,7 @@
                 Click to expand elements within the collapse div
                 {% if user.is_authenticated %}
                 <form id="questionform" action="point to a submit view" method="post">
+                    {% csrf_token %}
                     ... for each question in the course ...
                     {% for question in course.question_set.all %}
                     <div class="card mt-1">
