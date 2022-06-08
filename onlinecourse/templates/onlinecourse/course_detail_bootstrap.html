@@ -53,7 +53,7 @@
                     <div id="lesson{{lesson.id}}" class="collapse">
                         <div class="btn btn-info btn-block">Start Exam</div>
                         {% if user.is_authenticated %}
-                        <form id="questionform" action="#" method="post">
+                        <form id="questionform" action="{% url 'onlinecourse:submit' course.id %}" method="post">
                             {% csrf_token %}
                             {% for question in lesson.question_set.all %}
                             <div class="card mt-1">
