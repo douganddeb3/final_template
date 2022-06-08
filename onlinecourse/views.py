@@ -124,6 +124,7 @@ def extract_answers(request):
    return submitted_anwsers
 
 def submit(request, course_id):
+    choice_id = request.POST['value']
     user = request.user
     course = Course.objects.get(id=course_id)
     enrollment = Enrollment.objects.get(user=user, course=course)
@@ -132,8 +133,6 @@ def submit(request, course_id):
     for answer in answers:
         submission.choices.add(answer)
         submission.save()
-    return HttpResponseRedirect(reverse(viewname='onlinecourse:course_details', args=(course.id,)))
-    
 # <HINT> Create an exam result view to check if learner passed exam and show their question results and result for each question,
 # you may implement it based on the following logic:
         # Get course and submission based on their ids
@@ -143,6 +142,7 @@ def submit(request, course_id):
 def show_exam_result(request, course_id, submission_id):
     course = Course.objects.get(id=course_id)
     submission = Submission.objects.get(id=submission_id)
+    return render(request,'onlinecourse/exam_result_bootstrap')    
 
 
 
