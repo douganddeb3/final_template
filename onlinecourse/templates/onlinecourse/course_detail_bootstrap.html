@@ -60,6 +60,7 @@
                                 <div class="card-header"><h5>{{ question.question_text}}</h5></div>
                                 {% csrf_token %}
                                 <div class="form-group">
+                                    <input type='hidden' name="question_{{question.id}}" value="{{question.id}}">
                                    {% for choice in question.choice_set.all %}
                                     <div class="form-check">
                                         <label class="form-check-label">

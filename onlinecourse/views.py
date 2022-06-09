@@ -124,15 +124,21 @@ def extract_answers(request):
    return submitted_anwsers
 
 def submit(request, course_id):
-    choice_id = request.POST['value']
+    submitted_questions= []
+    for key in request.POST:
+        if key.startswith('question'):
+           value = request.POST[key]
+           submitted_question = Question.objects.get(id=value)
+           submitted_questions.append(submitted_question)
     user = request.user
     course = Course.objects.get(id=course_id)
     enrollment = Enrollment.objects.get(user=user, course=course)
     submission = Submission.objects.create(enrollment=enrollment)
-    answers = extract_answers(request)
-    for answer in answers:
-        submission.choices.add(answer)
-        submission.save()
+
+    is_correct_choice=[]
+    for question in submitted_questions:
+        answers = extract_answers(request)
+        print(question.is_get_score(answers))
 # <HINT> Create an exam result view to check if learner passed exam and show their question results and result for each question,
 # you may implement it based on the following logic:
         # Get course and submission based on their ids
