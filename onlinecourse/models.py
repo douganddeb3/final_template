@@ -109,11 +109,14 @@ class Question(models.Model):
     def is_get_score(self, selected_ids):
        all_answers = self.choice_set.filter(correct=True).count()
        selected_correct = self.choice_set.filter(correct=True, id__in=selected_ids).count()
-       
-       if all_answers == selected_correct:
-           return True
+       # The following is in case answers are correct but there are extra answers
+       wrong_choices= self.choice_set.filter(correct=False, id__in=selected_ids)
+       num_selected_wrong = wrong_choices.count()
+       print(f"selected_wrong is {num_selected_wrong}")
+       if num_selected_wrong == 0:
+           return 0
        else:
-           wrong_choices=self.choice_set.filter(correct=False, id__in=selected_ids)
+
            return wrong_choices
 #  <HINT> Create a Choice Model with:
     # Used to persist choice content for a question

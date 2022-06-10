@@ -136,9 +136,17 @@ def submit(request, course_id):
     submission = Submission.objects.create(enrollment=enrollment)
 
     is_correct_choice=[]
+    num_correct_choices_per_question=[]
     for question in submitted_questions:
+        num_correct_choices_per_question.append(question.choice_set.filter(correct=True).count())
         answers = extract_answers(request)
-        print(question.is_get_score(answers))
+        # this function is from the model Question
+        result = question.is_get_score(answers)
+        if result == 0:
+            print(f"score: 100 and type is {type(result)}")
+        else:
+            print(f"Not 100 type is {type(list(result))} and result is {result}")
+    print(num_correct_choices_per_question)        
 # <HINT> Create an exam result view to check if learner passed exam and show their question results and result for each question,
 # you may implement it based on the following logic:
         # Get course and submission based on their ids
