@@ -103,21 +103,26 @@ class Question(models.Model):
     question_text = models.CharField(max_length=100)
     #question grade/mark
     grade = models.IntegerField(default=0)
-    
-
+     
     # <HINT> A sample model method to calculate if learner get the score of the question
     def is_get_score(self, selected_ids):
+        
        all_answers = self.choice_set.filter(correct=True).count()
-       selected_correct = self.choice_set.filter(correct=True, id__in=selected_ids).count()
+       selected_correct = self.choice_set.filter(correct=True, id__in=selected_ids)
+       # Get all the ones that are true and see if any are not in selected ids
+       true_but_not_selected = self.choice_set.filter(correct=True).exclude(id__in=selected_ids)
        # The following is in case answers are correct but there are extra answers
        wrong_choices= self.choice_set.filter(correct=False, id__in=selected_ids)
-       num_selected_wrong = wrong_choices.count()
-       print(f"selected_wrong is {num_selected_wrong}")
+       # if it's true but not selected or its false and was selected:
+       total_wrong_choices = true_but_not_selected.union(wrong_choices)
+       print(f'Total wrong choices: {total_wrong_choices}')
+       num_selected_wrong = total_wrong_choices.count()
+       print(f"total wrong choices are {total_wrong_choices}")
        if num_selected_wrong == 0:
            return 0
        else:
 
-           return wrong_choices
+           return total_wrong_choices
 #  <HINT> Create a Choice Model with:
     # Used to persist choice content for a question
     # One-To-Many (or Many-To-Many if you want to reuse choices) relationship with Question
