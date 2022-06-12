@@ -146,7 +146,9 @@ def submit(request, course_id):
             print(f"score: 100 and type is {type(result)}")
         else:
             print(f"Not 100 type is {type(list(result))} and result is {result}")
-    print(num_correct_choices_per_question)        
+    print(num_correct_choices_per_question) 
+    return HttpResponseRedirect(reverse(viewname='onlinecourse:result', args=(course.id, submission.id)))
+       
 # <HINT> Create an exam result view to check if learner passed exam and show their question results and result for each question,
 # you may implement it based on the following logic:
         # Get course and submission based on their ids
@@ -156,7 +158,9 @@ def submit(request, course_id):
 def show_exam_result(request, course_id, submission_id):
     course = Course.objects.get(id=course_id)
     submission = Submission.objects.get(id=submission_id)
-    return render(request,'onlinecourse/exam_result_bootstrap')    
+    context={"course":course,
+             "submission":submission}
+    return render(request,'onlinecourse/exam_result_bootstrap.html', context)    
 
 
 
