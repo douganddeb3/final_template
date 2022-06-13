@@ -142,10 +142,7 @@ def submit(request, course_id):
         answers = extract_answers(request)
         # this function is from the model Question
         result = question.is_get_score(answers)
-        if result == 0:
-            print(f"score: 100 and type is {type(result)}")
-        else:
-            print(f"Not 100 type is {type(list(result))} and result is {result}")
+    
     print(num_correct_choices_per_question) 
     return HttpResponseRedirect(reverse(viewname='onlinecourse:result', args=(course.id, submission.id)))
        
@@ -158,8 +155,9 @@ def submit(request, course_id):
 def show_exam_result(request, course_id, submission_id):
     course = Course.objects.get(id=course_id)
     submission = Submission.objects.get(id=submission_id)
-    context={"course":course,
-             "submission":submission}
+    context={"grade":70,
+             "course":course,
+             "submission":submission,}
     return render(request,'onlinecourse/exam_result_bootstrap.html', context)    
 
 

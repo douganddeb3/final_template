@@ -143,5 +143,7 @@ class Choice(models.Model):
 class Submission(models.Model):
    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
    choices = models.ManyToManyField(Choice)
+   true_not_selected =models.ManyToManyField(Choice, related_name="true_not_elected")
+   false_but_selected =models.ManyToManyField(Choice, related_name='false_but_selected')
    #Other fields and methods you would like to design
 
