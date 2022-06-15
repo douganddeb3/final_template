@@ -135,15 +135,26 @@ def submit(request, course_id):
     enrollment = Enrollment.objects.get(user=user, course=course)
     submission = Submission.objects.create(enrollment=enrollment)
 
-    is_correct_choice=[]
-    num_correct_choices_per_question=[]
+    
     for question in submitted_questions:
-        num_correct_choices_per_question.append(question.choice_set.filter(correct=True).count())
         answers = extract_answers(request)
         # this function is from the model Question
+        # returns a dict with keys [true_not_selected] and [wrong_choices]
+        # that hold query sets
         result = question.is_get_score(answers)
-    
-    print(num_correct_choices_per_question) 
+        # true_not_selected false_but_selected
+        res_len=len(result['true_not_selected'])
+        if result['true_not_selected']:
+            for item in result['true_not_selected']:
+                submission.true_not_selected.add(item)
+                submission.save()
+                sel = s
+                print(f'TRUE NOT SELECTED:{item}')
+
+            print(f'result true not selected length: {res_len}')
+        else:
+            print('there are no true not selected')
+    # print(f'TRUE NOT SELECTED:{submission.enrollment}')
     return HttpResponseRedirect(reverse(viewname='onlinecourse:result', args=(course.id, submission.id)))
        
 # <HINT> Create an exam result view to check if learner passed exam and show their question results and result for each question,

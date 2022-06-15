@@ -106,7 +106,8 @@ class Question(models.Model):
      
     # <HINT> A sample model method to calculate if learner get the score of the question
     def is_get_score(self, selected_ids):
-        
+        # returns a dict with keys [true_not_selected] and [wrong_choices]
+        # that hold query sets
        all_answers = self.choice_set.filter(correct=True).count()
        selected_correct = self.choice_set.filter(correct=True, id__in=selected_ids)
        # Get all the ones that are true and see if any are not in selected ids
@@ -114,15 +115,12 @@ class Question(models.Model):
        # The following is in case answers are correct but there are extra answers
        wrong_choices= self.choice_set.filter(correct=False, id__in=selected_ids)
        # if it's true but not selected or its false and was selected:
-       total_wrong_choices = true_but_not_selected.union(wrong_choices)
+       total_wrong_choices = {}
+       total_wrong_choices['true_not_selected']=true_but_not_selected 
+       total_wrong_choices['wrong_choices']=wrong_choices
        print(f'Total wrong choices: {total_wrong_choices}')
-       num_selected_wrong = total_wrong_choices.count()
-       print(f"total wrong choices are {total_wrong_choices}")
-       if num_selected_wrong == 0:
-           return 0
-       else:
-
-           return total_wrong_choices
+       
+       return total_wrong_choices
 #  <HINT> Create a Choice Model with:
     # Used to persist choice content for a question
     # One-To-Many (or Many-To-Many if you want to reuse choices) relationship with Question
@@ -143,7 +141,7 @@ class Choice(models.Model):
 class Submission(models.Model):
    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
    choices = models.ManyToManyField(Choice)
-   true_not_selected =models.ManyToManyField(Choice, related_name="true_not_elected")
+   true_not_selected =models.ManyToManyField(Choice, related_name="true_not_selected")
    false_but_selected =models.ManyToManyField(Choice, related_name='false_but_selected')
    #Other fields and methods you would like to design
 
