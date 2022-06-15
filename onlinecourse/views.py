@@ -148,8 +148,8 @@ def submit(request, course_id):
             for item in result['true_not_selected']:
                 submission.true_not_selected.add(item)
                 submission.save()
-                sel = s
-                print(f'TRUE NOT SELECTED:{item}')
+                sel = Submission.objects.filter(id=item.id)
+                print(f'TRUE NOT SELECTED:{sel}')
 
             print(f'result true not selected length: {res_len}')
         else:
