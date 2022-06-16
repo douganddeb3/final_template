@@ -135,25 +135,39 @@ def submit(request, course_id):
     enrollment = Enrollment.objects.get(user=user, course=course)
     submission = Submission.objects.create(enrollment=enrollment)
 
-    
+    num_choices=0
+    num_wrong=0
     for question in submitted_questions:
+        num =question.choice_set.all().count()
+        num_choices+=num
+        print(f'NUM ALL CHOICES: {num}')
         answers = extract_answers(request)
         # this function is from the model Question
         # returns a dict with keys [true_not_selected] and [wrong_choices]
         # that hold query sets
         result = question.is_get_score(answers)
         # true_not_selected false_but_selected
-        res_len=len(result['true_not_selected'])
         if result['true_not_selected']:
             for item in result['true_not_selected']:
+                num_wrong+=1
                 submission.true_not_selected.add(item)
                 submission.save()
                 sel = submission.true_not_selected.all()
                 print(f'TRUE NOT SELECTED:{sel}')
-
-            print(f'result true not selected length: {res_len}')
-        else:
-            print('there are no true not selected')
+        if result['wrong_choices']:
+            for item in result['wrong_choices']:
+                num_wrong+=1
+                submission.false_but_selected.add(item)
+                submission.save()
+                sel = submission.false_but_selected.all()
+                print(f'WRONG_CHOiCES ARE:{sel}')
+        # Score is based on how many correct choices made
+        # Each choice is a point, a point is awarded for
+        # selecting a right answer or not selecting a wrong 
+        # answer
+        num_correct=num_choices - num_wrong
+        print(f'score is {num_correct} out of {num_choices}')
+           
     # print(f'TRUE NOT SELECTED:{submission.enrollment}')
     return HttpResponseRedirect(reverse(viewname='onlinecourse:result', args=(course.id, submission.id)))
        
