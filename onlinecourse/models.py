@@ -144,5 +144,6 @@ class Submission(models.Model):
    true_not_selected =models.ManyToManyField(Choice, related_name="true_not_selected")
    false_but_selected =models.ManyToManyField(Choice, related_name='false_but_selected')
    grade=models.IntegerField(default=0)
+   question=models.ManyToManyField(Question)
    #Other fields and methods you would like to design
 

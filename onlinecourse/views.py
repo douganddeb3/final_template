@@ -138,6 +138,9 @@ def submit(request, course_id):
     num_choices=0
     num_wrong=0
     for question in submitted_questions:
+        submission.question.add(question)
+        submission.save()
+        print(f'Question is:{submission.question.all()}')
         num =question.choice_set.all().count()
         num_choices+=num
         print(f'NUM ALL CHOICES: {num}')
@@ -167,7 +170,11 @@ def submit(request, course_id):
         # answer
         num_correct=num_choices - num_wrong
         print(f'score is {num_correct} out of {num_choices}')
-           
+        grade=round(num_correct/num_choices*100) 
+        print(f'Grade is: {grade}')
+        submission.grade = grade
+        submission.save()
+        print(submission.grade)  
     # print(f'TRUE NOT SELECTED:{submission.enrollment}')
     return HttpResponseRedirect(reverse(viewname='onlinecourse:result', args=(course.id, submission.id)))
        
@@ -180,7 +187,8 @@ def submit(request, course_id):
 def show_exam_result(request, course_id, submission_id):
     course = Course.objects.get(id=course_id)
     submission = Submission.objects.get(id=submission_id)
-    context={"grade":70,
+    grade=submission.grade
+    context={"grade":grade,
              "course":course,
              "submission":submission,}
     return render(request,'onlinecourse/exam_result_bootstrap.html', context)    
