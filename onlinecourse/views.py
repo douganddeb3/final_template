@@ -135,15 +135,16 @@ def submit(request, course_id):
     enrollment = Enrollment.objects.get(user=user, course=course)
     submission = Submission.objects.create(enrollment=enrollment)
 
-    num_choices=0
-    num_wrong=0
+    
+    total_num_wrong=0
+    num_wrong_choices=0
+    
+    total_num_correct_choices=0
     for question in submitted_questions:
+        num_wrong=0
+        num_correct_choices=question.choice_set.filter(correct=True).count()
         submission.question.add(question)
         submission.save()
-        print(f'Question is:{submission.question.all()}')
-        num =question.choice_set.all().count()
-        num_choices+=num
-        print(f'NUM ALL CHOICES: {num}')
         answers = extract_answers(request)
         # this function is from the model Question
         # returns a dict with keys [true_not_selected] and [wrong_choices]
@@ -153,24 +154,26 @@ def submit(request, course_id):
         if result['true_not_selected']:
             for item in result['true_not_selected']:
                 num_wrong+=1
+                print(f'Wrong true not selected:{num_wrong}')
                 submission.true_not_selected.add(item)
                 submission.save()
-                sel = submission.true_not_selected.all()
-                print(f'TRUE NOT SELECTED:{sel}')
         if result['wrong_choices']:
             for item in result['wrong_choices']:
-                num_wrong+=1
+                if num_correct_choices-num_wrong>0:
+                    num_wrong+=1
                 submission.false_but_selected.add(item)
                 submission.save()
-                sel = submission.false_but_selected.all()
-                print(f'WRONG_CHOiCES ARE:{sel}')
+        total_num_correct_choices+=num_correct_choices
+        total_num_wrong+=num_wrong
+        print(f'Total correct choices: {total_num_correct_choices}')
+        print(f'Total num wrong:{total_num_wrong}')
         # Score is based on how many correct choices made
-        # Each choice is a point, a point is awarded for
-        # selecting a right answer or not selecting a wrong 
-        # answer
-        num_correct=num_choices - num_wrong
-        print(f'score is {num_correct} out of {num_choices}')
-        grade=round(num_correct/num_choices*100) 
+        # Each correct choice is a point, a point is deducted
+        # For not selecting a correct answer and a point is deducted
+        # selecting a wrong choice. Score can be no less than 0.
+        num_correct=total_num_correct_choices - total_num_wrong
+        print(f'score is {num_correct} out of {total_num_correct_choices}')
+        grade=round(num_correct/total_num_correct_choices*100) 
         print(f'Grade is: {grade}')
         submission.grade = grade
         submission.save()
