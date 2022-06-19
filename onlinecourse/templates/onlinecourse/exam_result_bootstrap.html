@@ -51,7 +51,7 @@
             {% for quest in submission.question.all %}
                
                 <h6>{{quest.question_text}}</h6>
-                {% for choice in quest.choice.all %}
+                {% for choice in quest.choice_set.all %}
                     {{choice.content}}
                 {% endfor %}
             {% endfor %}
