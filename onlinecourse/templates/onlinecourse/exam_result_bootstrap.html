@@ -49,11 +49,31 @@
     <div class="card-columns-vertical mt-1">
     <h5 class="">Exam results</h5>
             {% for quest in submission.question.all %}
-               
-                <h6>{{quest.question_text}}</h6>
+            <div class="card mt-1">
+                <div class="card-header">
+                    <h5>{{ quest.question_text}}</h5>
+                </div>           
+                
                 {% for choice in quest.choice_set.all %}
-                    {{choice.content}}
+                    {% if choice in submission.true_not_selected.all %}
+                        <div class="text-warning">
+                            Not Selected: {{choice.content}}
+                        </div>
+                    {% elif choice in submission.false_but_selected.all %}    
+                        <div class="text-warning">
+                            False: {{choice.content}}
+                        </div> 
+                    {% elif choice.correct %}
+                        <div class="text-success">
+                            Correct answer: {{choice.content}}
+                        </div>
+                    {% else %}
+                        <div class="text-muted">
+                            {{choice.content}}
+                        </div>    
+                    {% endif %}
                 {% endfor %}
+            </div>    
             {% endfor %}
         
  </div>
